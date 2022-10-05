@@ -18,7 +18,8 @@
                             </h3>
                             <div class="text-sm leading-normal mt-0 mb-2 text-gray-500 font-bold uppercase">
                                 <i class="fas fa-map-marker-alt mr-2 text-lg text-gray-500"></i>
-                                <strong>Your Balance: </strong> {{ auth()->user()->balance() }}
+                                <strong>{{ __('Your Balance: ') }} </strong>
+                                {{ auth()->user()->balance() }}
                             </div>
                         </div>
 
@@ -29,7 +30,7 @@
 
                                     @if (auth()->user()->balance() == 0)
                                         <p class="mb-6 text-red-700 font-bold">
-                                            You don't have enough balance in your wallet.
+                                            {{ __('You dont have enough balance in your wallet.') }}
                                         </p>
                                     @endif
 
@@ -38,7 +39,7 @@
                                             <div class="md:w-1/3">
                                                 <label
                                                     class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">
-                                                    Transfer to Email
+                                                    {{ __('Transfer to Email') }}
                                                 </label>
                                             </div>
                                             <div class="md:w-2/3">
@@ -52,13 +53,28 @@
                                             <div class="md:w-1/3">
                                                 <label
                                                     class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">
-                                                    Amount
+                                                    {{ __('Amount') }}
                                                 </label>
                                             </div>
                                             <div class="md:w-2/3">
                                                 <span class="leading-10 mr-2"></span>
-                                                <input class="" type="text" name="amount"
-                                                    placeholder="3.00" />
+                                                <input class="" type="text" name="amount" placeholder="3.00"
+                                                    required />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-6">
+                                        <div class="md:flex md:items-center">
+                                            <div class="md:w-1/3">
+                                                <label
+                                                    class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">
+                                                    {{ __('Description') }}
+                                                </label>
+                                            </div>
+                                            <div class="md:w-2/3">
+                                                <span class="leading-10 mr-2"></span>
+                                                <input class="" type="text" name="description"
+                                                    placeholder="Enter Description" required />
                                             </div>
                                         </div>
                                     </div>

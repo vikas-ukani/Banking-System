@@ -7,7 +7,8 @@
             <div class="flex justify-between gap-2">
                 @if ($user->account)
                     <div class="border px-4 py-2 rounded text-sm text-gray-700 bg-slate-50 ">
-                        <strong>Balance:</strong> {{ auth()->user()->balance() ?? 0.0 }}
+                        <strong>{{ __('Balance: ') }}</strong>
+                        {{ auth()->user()->balance() ?? 0.0 }}
                     </div>
                 @endif
 
@@ -30,8 +31,10 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    Users
+                <div class="mb-4 p-6 bg-white border-b border-gray-200">
+                    <span class="text-xl font-bold">
+                        {{ __('All Users') }}
+                    </span>
                     <table class="table w-full mt-4 p-4">
                         <thead>
                             <tr class="p-2">
@@ -63,9 +66,54 @@
                                                     class="border px-4 py-2 rounded text-sm text-gray-700 bg-green-400 ">
                                                     {{ __('Send Money') }}
                                                 </a>
+                                            @else
+                                                -
                                             @endif
                                         </div>
                                     </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-5 p-6 bg-white border-b border-t-2 border-gray-200">
+                    <span class="text-xl font-bold">
+                        {{ __('Your Transactions Statements') }}
+                    </span>
+
+                    @if (count($transactions) > 0)
+                        <a href="{{ route('generate-invoice') }}" class="text-sm text-blue-500 underline pl-4">
+                            {{ __('Generate Invoice') }}
+                        </a>
+                    @endif
+                    <table class="table w-full mt-4 p-4">
+                        <thead>
+                            <tr class="p-2">
+                                <th class="text-left">{{ __('#') }}</th>
+                                <th class="text-left">{{ __('Transaction Date') }}</th>
+                                <th class="text-left">{{ __('Balance') }}</th>
+                                <th class="text-left">{{ __('Total Balance') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (count($transactions) == 0)
+                                <tr>
+                                    <td colspan="4" class="text-center py-4">
+                                        {{ __('No transactions statements fund!') }}</td>
+                                </tr>
+                            @endif
+                            @foreach ($transactions as $transaction)
+                                <tr>
+                                    <?php $transaction = $transaction->toArray(); ?>
+                                    <td> {{ ++$loop->index }}</td>
+                                    <td>
+                                        {{ gmdate('d-m-Y H:i:s', $transaction['created']) }}
+                                    </td>
+
+                                    <td>{{ $transaction['amount'] / 100 }}</td>
+                                    <td>{{ $transaction['ending_balance'] / 100 }}</td>
+
                                 </tr>
                             @endforeach
                         </tbody>

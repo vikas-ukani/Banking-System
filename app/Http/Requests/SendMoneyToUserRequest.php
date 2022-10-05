@@ -24,6 +24,7 @@ class SendMoneyToUserRequest extends FormRequest
     public function rules()
     {
         return [
+            'email' => 'required',
             'amount' => 'required|numeric',
             'description' => 'string'
         ];

@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DepositFundRequest;
 use App\Http\Requests\SendMoneyToUserRequest;
+use App\Mail\GenerateTransactionPDF;
 use App\Models\Account;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -26,13 +28,16 @@ class UserController extends Controller
     public function index()
     {
         $user = User::where('id', auth()->user()->id)->with(['account', 'roles'])->first();
+
         /** Get Other Users except logged in user */
         $users = Role::where('id', 3)->with(['users' => function ($q) {
             return $q->where('id', '<>', auth()->user()->id);
         }, 'users.account'])->first();
-        // dd($users->users->toArray());
+
+        $transactions = $user->balanceTransactions()->toArray();
         return view('dashboard')
             ->with('user', $user)
+            ->with('transactions', $transactions)
             ->with('users', $users->users);
     }
 
@@ -73,9 +78,32 @@ class UserController extends Controller
             $toUser = User::where('email', $input['email'])->first();
             $toUser->debitBalance($input['amount'] * 100, $input['description']);
             $user->creditBalance($input['amount'] * 100, $input['description']);
-            return view('add-fund')->with('success', 'Fund added to your wallet.');
+            return redirect()->to('dashboard');
         } catch (\Exception $e) {
-            return view('add-fund')->with('error', $e->getMessage());
+            dd($e->getMessage());
+            return redirect()->to('dashboard')->with('error', $e->getMessage());
         }
+    }
+
+    /**
+     * Generate and Share Invoice to user's email
+     *
+     * @return void
+     */
+    public function generateInvoice()
+    {
+        $user = auth()->user();
+        $transactions = $user->balanceTransactions()->toArray();
+
+        Mail::to($user->email)->send(new GenerateTransactionPDF($transactions));
+        if (Mail::failures()) {
+            return response()->Fail('Sorry! Please try again latter');
+        } else {
+            return response()->success('Great! Successfully send in your mail');
+        }
+
+        // $invoice = $user->createInvoice()->toArray();
+        // return $user->downloadInvoice($invoice['id']);
+        // return redirect()->to('dashboard');
     }
 }

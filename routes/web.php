@@ -33,4 +33,6 @@ Route::middleware('auth')->group(function () {
     Route::post('user/add-money', [UserController::class, 'addFundToWallet'])->name('user.add-fund-wallet');
     Route::get('/send-money/{id}', [TransactionController::class, 'sendMoneyPage'])->name('user.sendMoney');
     Route::post('user/send-money', [UserController::class, 'sendMoneyFromWallet'])->name('user.send-money');
+
+    Route::get('user-invoice', [UserController::class, 'generateInvoice'])->name('generate-invoice');
 });
