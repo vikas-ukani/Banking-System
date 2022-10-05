@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Actions\User\UserCreateAction;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
@@ -57,26 +58,27 @@ class LoginController extends Controller
      * @param $social
      * @return Response
      */
-    public function handleProviderCallback($social)
+    public function handleProviderCallback($social, UserCreateAction $userCreateAction)
     {
         try {
             $user = Socialite::driver($social)->user();
-            $searchUser = User::where('social_id', $user->id)->first();
-
-            $newUser = User::updateOrCreate(
-                ['social_id' => $user->id,],
-                [
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'social_id' => $user->id,
-                    'auth_type' => $social,
-                    'password' => encrypt($user->id)
-                ]
-            );
+            $newUser = User::where('social_id', $user->id)->first();
+            if ($newUser == null) {
+                $newUser = $userCreateAction->handle(
+                    [
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'social_id' => $user->id,
+                        'auth_type' => $social,
+                        'password' => $user->id
+                    ]
+                );
+            }
             Auth::login($newUser);
             return redirect()->route('dashboard');
         } catch (Exception $e) {
-            return redirect()->back()->with('status', $e->getMessage());
+            dd($e->getMessage());
+            // return redirect()->back()->with('status', $e->getMessage());
         }
     }
 }
