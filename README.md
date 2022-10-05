@@ -47,19 +47,47 @@ git clone https://github.com/vikas-ukani/Banking-System.git
 cp .env.example .env
 ```
 
+
+### Edit .env  and Set Database Configurations.
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=packt-database
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+
+### Install Packages
+```
+composer install 
+```
+
+### Generate app key
+```
+php artisan key:generate
+```
+
+### Run the migrations with Seeder datas
+```
+php artisan migrate:fresh --seed
+```
+
 - Configure Credentials in order to setup in local system
 
 ### Install Packages
 ```
 npm install 
 ```
+### Run the node Packages
+```
+npm run dev 
+```
 
-### Run The development server
-```
-npm run dev
-```
+- It will create categories and random books factory data to testing more.
 
-- It will run the development server in port 3000
+### Run the Project
 ```
-http://localhost:3000
+php artisan serve
 ```
