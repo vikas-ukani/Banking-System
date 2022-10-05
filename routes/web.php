@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
-use Illuminate\Foundation\Application;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,24 +16,23 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('login/{social}', [LoginController::class, 'socialLogin']);
-Route::get('login/{social}/callback', [LoginController::class, 'handleProviderCallback']);
-
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    return view('welcome');
 });
 
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
-])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+Route::get('login/{social}', [LoginController::class, 'socialLogin'])->name('auth.social');
+Route::get('login/{social}/callback', [LoginController::class, 'handleProviderCallback']);
+
+Route::get('/dashboard', [UserController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+
+require __DIR__ . '/auth.php';
+
+
+Route::middleware('auth')->group(function () {
+    Route::get('user/add-fund', [UserController::class, 'addFundToWalletView'])->name('user.add-fund');
+    Route::post('user/add-money', [UserController::class, 'addFundToWallet'])->name('user.add-fund-wallet');
+    Route::get('/send-money/{id}', [TransactionController::class, 'sendMoneyPage'])->name('user.sendMoney');
+    Route::post('user/send-money', [UserController::class, 'sendMoneyFromWallet'])->name('user.send-money');
+
+    Route::get('user-invoice', [UserController::class, 'generateInvoice'])->name('generate-invoice');
 });

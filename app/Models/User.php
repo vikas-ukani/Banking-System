@@ -2,21 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Fortify\TwoFactorAuthenticatable;
-use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
+use Laravel\Cashier\Billable;
 
 class User extends Authenticatable
 {
-    use HasApiTokens;
-    use HasFactory;
-    use HasProfilePhoto;
-    use Notifiable;
-    use TwoFactorAuthenticatable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use Billable;
 
     /**
      * The attributes that are mass assignable.
@@ -27,6 +23,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'current_team_id',
+        'profile_photo_path',
+        'social_id',
+        'auth_type',
     ];
 
     /**
@@ -50,12 +50,21 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+
+
+    /** Relations */
+    public function role()
+    {
+        return $this->hasOne(Role::class);
+    }
+
     /**
-     * The accessors to append to the model's array form.
+     * Access user account details
      *
-     * @var array
+     * @return void
      */
-    protected $appends = [
-        'profile_photo_url',
-    ];
+    public function account()
+    {
+        return $this->hasOne(Account::class, 'user_id');
+    }
 }
