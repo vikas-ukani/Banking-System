@@ -5,12 +5,10 @@
                 {{ __('Dashboard') }}
             </h2>
             <div class="flex justify-between gap-2">
-                @if ($user->account)
-                    <div class="border px-4 py-2 rounded text-sm text-gray-700 bg-slate-50 ">
-                        <strong>{{ __('Balance: ') }}</strong>
-                        {{ auth()->user()->balance() ?? 0.0 }}
-                    </div>
-                @endif
+                <div class="border px-4 py-2 rounded text-sm text-gray-700 bg-slate-50 ">
+                    <strong>{{ __('Balance: ') }}</strong>
+                    {{ auth()->user()->balance() ?? 0.0 }}
+                </div>
 
                 @can('deposits')
                     <a href="{{ route('user.add-fund') }}"
